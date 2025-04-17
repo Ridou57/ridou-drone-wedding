@@ -57,7 +57,9 @@ h1 {
   font-weight: bold;
   letter-spacing: 2px;
   color: white;
+  text-transform: uppercase; /* 💥 MAGIE */
 }
+
 
 .overlay p {
   font-size: 1.2rem;
