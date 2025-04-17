@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ridou Drone Wedding</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#000000" />
+
+
+  <!-- Import map pour Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="overlay">
+    <h1>Ridou Drone Wedding</h1>
+    <p>Je suis RidouDJI, vidéaste drone passionné de capturer les plus beaux moments depuis le ciel.</p>
+
+    <div class="button-container">
+      <a href="https://instagram.com" target="_blank" class="link-btn"><i class="fab fa-instagram"></i> Instagram</a>
+      <a href="https://tiktok.com" target="_blank" class="link-btn"><i class="fab fa-tiktok"></i> TikTok</a>
+      <a href="https://wa.me/33622045800" target="_blank" class="link-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      <a href="tel:+33622045800" class="link-btn"><i class="fas fa-phone-alt"></i> Appeler</a>
+    </div>
+
+    <a href="https://wa.me/33622045800" class="reserve-btn" target="_blank">Réserver maintenant</a>
+
+    <div class="phone">
+      📞 06 22 04 58 00<br>
+      📩 <a href="mailto:RidouDJIwedding@gmail.com">RidouDJIwedding@gmail.com</a>
+    </div>
+  </div>
+
+  <!-- SCRIPT 3D ORBITAL + LUMIÈRES -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.5, 5);
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(0x000000, 0);
+    document.body.appendChild(renderer.domElement);
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+    scene.add(hemiLight);
+
+    const loader = new GLTFLoader();
+    loader.load('drone.glb', function (gltf) {
+      const drone1 = gltf.scene.clone();
+      const drone2 = gltf.scene.clone();
+
+      drone1.scale.set(2, 2, 2);
+      drone2.scale.set(2, 2, 2);
+
+      scene.add(drone1);
+      scene.add(drone2);
+
+      // Projecteurs comme s’ils filmaient
+      const spotlight1 = new THREE.SpotLight(0xffffff, 2, 10, Math.PI / 8, 0.5);
+      const spotlight2 = new THREE.SpotLight(0xffffff, 2, 10, Math.PI / 8, 0.5);
+      spotlight1.position.set(0, -0.2, 0.5);
+      spotlight2.position.set(0, -0.2, 0.5);
+      drone1.add(spotlight1);
+      drone2.add(spotlight2);
+      scene.add(spotlight1);
+      scene.add(spotlight2);
+
+      // Petites lumières qui les suivent
+      const light1 = new THREE.PointLight(0xffffff, 0.8, 10);
+      const light2 = new THREE.PointLight(0xffffff, 0.8, 10);
+      scene.add(light1, light2);
+
+      let angle1 = 0;
+      let angle2 = Math.PI;
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        angle1 += 0.01;
+        angle2 += 0.012;
+
+        // Orbite drone 1
+        drone1.position.set(
+          Math.cos(angle1) * 3,
+          2,
+          Math.sin(angle1) * 1.2
+        );
+        drone1.rotation.y += 0.01;
+        light1.position.copy(drone1.position).add(new THREE.Vector3(0, 1, 0));
+
+        // Orbite drone 2
+        drone2.position.set(
+          Math.sin(angle2) * 2.5,
+          1.6,
+          Math.cos(angle2) * 1.8
+        );
+        drone2.rotation.y -= 0.01;
+        light2.position.copy(drone2.position).add(new THREE.Vector3(0, 1, 0));
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    }, undefined, function (error) {
+      console.error('Erreur chargement du drone.glb', error);
+    });
+  </script>
+</body>
+</html>
